@@ -1,9 +1,7 @@
 import React from 'react'
 
-function MedicinePage() {
+export default function MedicinePage() {
   return (
     <div>MedicinePage</div>
   )
 }
-
-export default MedicinePage

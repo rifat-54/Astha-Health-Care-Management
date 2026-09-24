@@ -1,7 +1,12 @@
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function CommonLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    
-{children}
-
+    <>
+      Common Layout
+      {children}
+    </>
   );
 }

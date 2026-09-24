@@ -1,10 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 const axiosInstance=()=>{
     const instance=axios.create({
-        baseURL: API_BASE_URL,
+        baseURL: `${API_BASE_URL}/api/v1/`,
         timeout: 30000,
         headers: {
             contentType:'application/json',
