@@ -2,7 +2,7 @@ export interface ApiResponse<TData=unknown>{
     success:boolean,
     message:string,
     data:TData,
-    meta:PaginationMeta
+    meta?:PaginationMeta
 }
 
 export interface PaginationMeta{
