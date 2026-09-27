@@ -1,9 +1,12 @@
+"use server"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { httpClient } from "@/src/lib/axios/httpClient";
-import { setTokenInCookies } from "@/src/lib/tokenUtils";
-import { ApiErrorResponse } from "@/src/types/api.types";
-import { ILoginResponse } from "@/src/types/auth.types";
-import { ILoginPayload, loginZodSchema } from "@/src/zod/auth.validation";
+
+import { httpClient } from "@/lib/axios/httpClient";
+import { setTokenInCookies } from "@/lib/tokenUtils";
+import { ApiErrorResponse } from "@/types/api.types";
+import { ILoginResponse } from "@/types/auth.types";
+import { ILoginPayload, loginZodSchema } from "@/zod/auth.validation";
 import { redirect } from "next/navigation";
 
 
@@ -31,16 +34,23 @@ export const loginAction=async(payload:ILoginPayload):Promise<ILoginResponse | A
         await setTokenInCookies("refreshToken",refreshToken)
         await setTokenInCookies("better-auth.session_token",token)
 
-        redirect("/dashboard")
+
+            redirect("/")
 
         
 
     } catch (error:any) {
+
+        console.log("error=> ",error)
+         if(error && typeof error === "object" && "digest" in error && typeof error.digest === "string" && error.digest.startsWith("NEXT_REDIRECT")){
+        throw error;
+    }
         return {
             success: false,
             message: `Login failed: ${error.message}`,
         }
 
     }
+
 
 }

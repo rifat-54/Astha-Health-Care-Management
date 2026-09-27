@@ -10,7 +10,8 @@ const getTokenSecondRemaining=(token:string):number=>{
     if(!token) return 0
 
     try {
-        const tokenPayload=JWT_ACCESS_SECRET?jwt.verify(token,JWT_ACCESS_SECRET) as JwtPayload:jwt.decode(token) as JwtPayload
+        // const tokenPayload=JWT_ACCESS_SECRET?jwt.verify(token,JWT_ACCESS_SECRET) as JwtPayload:jwt.decode(token) as JwtPayload
+        const tokenPayload=jwt.decode(token) as JwtPayload
 
         if(tokenPayload &&! tokenPayload.exp){
             return 0;
@@ -25,7 +26,11 @@ const getTokenSecondRemaining=(token:string):number=>{
 }
 
 export const setTokenInCookies=async(name:string,token:string,fallbackMaxAgeInSecond=60*60*24 )=>{
-    const maxAgeInSecond=getTokenSecondRemaining(token)
+      let maxAgeInSecond = fallbackMaxAgeInSecond;
 
-    await setCookie(name,token,maxAgeInSecond || fallbackMaxAgeInSecond)
+  if (name === "accessToken" || name === "refreshToken") {
+    maxAgeInSecond = getTokenSecondRemaining(token) || fallbackMaxAgeInSecond;
+  }
+
+    await setCookie(name,token,maxAgeInSecond)
 }
