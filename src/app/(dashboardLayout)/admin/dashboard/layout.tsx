@@ -1,11 +1,11 @@
-export default function CommonProtectedLayout({
+export default function AdminDashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <>
-      Common Protected Layout
+      Admin Dashboard Layout
       {children}
     </>
   );
