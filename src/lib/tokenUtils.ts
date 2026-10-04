@@ -5,7 +5,7 @@ import { setCookie } from "./cookieUtils"
 
 const JWT_ACCESS_SECRET=process.env.JWT_ACCESS_SECRET
 
-const getTokenSecondRemaining=(token:string):number=>{
+export const getTokenSecondRemaining=(token:string):number=>{
 
     if(!token) return 0
 
