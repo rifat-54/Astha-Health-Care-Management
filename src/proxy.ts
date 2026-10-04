@@ -1,7 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtUtils } from "./lib/jwtUtils";
 import { getDefaultDashboardRoute, getRouteOwner, isAuthRoute, UserRole } from "./lib/authUtils";
-import { getUserInfo } from "./services/auth.service";
+import { getNewTokensWithRefreshToken, getUserInfo } from "./services/auth.service";
+import { isTokenExpireingSoon } from "./lib/tokenUtils";
+
+
+async function refreshTokenMiddleware (refreshToken : string) : Promise<boolean> {
+    try {
+        const refresh = await getNewTokensWithRefreshToken(refreshToken);
+        if(!refresh){
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.error("Error refreshing token in middleware:", error);
+        return false;   
+    }
+}
 
 
 export const proxy=async(request:NextRequest)=>{
@@ -31,10 +46,41 @@ export const proxy=async(request:NextRequest)=>{
 
     const isAuth=isAuthRoute(pathname)
 
-    // if(isAuth && isValidAccessToken){
 
-    //     return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
-    // }
+    if(isValidAccessToken && refreshToken && (await isTokenExpireingSoon(accessToken))){
+        const requestHeaders=new Headers(request.headers)
+
+        const response=NextResponse.next({
+            request:{
+                headers:requestHeaders
+            }
+        })
+
+        try {
+            const refreshed=await refreshTokenMiddleware(refreshToken)
+
+            if(refreshed){
+                requestHeaders.set("x-token-refreshed","1")
+            }
+            return NextResponse.next({
+                request:{
+                    headers:requestHeaders
+                },
+                headers:response.headers
+            })
+        } catch (error) {
+            console.error("Error refreshing token",error)
+        }
+
+        return response
+    }
+
+
+    // user is login and trying to go login page agian
+    if(isAuth && isValidAccessToken){
+
+        return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
+    }
 
       // Rule - 2 : User is trying to access reset password page
        if(pathname === "/reset-password"){

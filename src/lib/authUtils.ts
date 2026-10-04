@@ -1,4 +1,4 @@
-import { getTokenSecondRemaining } from "./tokenUtils";
+
 
 export type UserRole = "SUPER_ADMIN" | "ADMIN" | "DOCTOR" | "PATIENT";
 
@@ -101,14 +101,3 @@ export const isValidRedirectForRole=(redirectPath:string,role:UserRole)=>{
     return false
 }
 
-export async function isTokenExpireingSoon(token:string,threeholdInSecond=300){
-
-    const remainingSeconds=getTokenSecondRemaining(token)
-    // return remainingSeconds>0 && remainingSeconds<=threeholdInSecond;
-    return remainingSeconds<=threeholdInSecond
-}
-
-export const isTokenExpire=(token:string)=>{
-    const remainingSeconds=getTokenSecondRemaining(token)
-    return remainingSeconds===0;
-}
