@@ -5,7 +5,7 @@ import { setCookie } from "./cookieUtils"
 
 const JWT_ACCESS_SECRET=process.env.JWT_ACCESS_SECRET
 
-export const getTokenSecondRemaining=(token:string):number=>{
+export const getTokenSecondRemaining=async(token:string)=>{
 
     if(!token) return 0
 
@@ -29,7 +29,7 @@ export const setTokenInCookies=async(name:string,token:string,fallbackMaxAgeInSe
       let maxAgeInSecond = fallbackMaxAgeInSecond;
 
   if (name === "accessToken" || name === "refreshToken") {
-    maxAgeInSecond = getTokenSecondRemaining(token) || fallbackMaxAgeInSecond;
+    maxAgeInSecond =await getTokenSecondRemaining(token) || fallbackMaxAgeInSecond;
   }
 
     await setCookie(name,token,maxAgeInSecond)
@@ -38,12 +38,12 @@ export const setTokenInCookies=async(name:string,token:string,fallbackMaxAgeInSe
 
 export async function isTokenExpireingSoon(token:string,threeholdInSecond=300){
 
-    const remainingSeconds=getTokenSecondRemaining(token)
+    const remainingSeconds=await getTokenSecondRemaining(token)
     // return remainingSeconds>0 && remainingSeconds<=threeholdInSecond;
     return remainingSeconds<=threeholdInSecond
 }
 
-export const isTokenExpire=(token:string)=>{
-    const remainingSeconds=getTokenSecondRemaining(token)
+export const isTokenExpire=async (token:string)=>{
+    const remainingSeconds=await getTokenSecondRemaining(token)
     return remainingSeconds===0;
 }

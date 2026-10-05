@@ -76,11 +76,7 @@ export const proxy=async(request:NextRequest)=>{
     }
 
 
-    // user is login and trying to go login page agian
-    if(isAuth && isValidAccessToken){
-
-        return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
-    }
+  
 
       // Rule - 2 : User is trying to access reset password page
        if(pathname === "/reset-password"){
@@ -131,8 +127,9 @@ export const proxy=async(request:NextRequest)=>{
 
         if(userInfo){
 
+            console.log("userinfo",userInfo)
             // if  email not verify
-            if(userInfo.emailVerifie===false){
+            if(userInfo.emailVerified===false){
                 if(pathname!=="/verify-email"){
                     const url=new URL("/verify-email",request.url)
                     url.searchParams.set("email",userInfo.email)
@@ -141,12 +138,12 @@ export const proxy=async(request:NextRequest)=>{
                 return NextResponse.next()
             }
 
-            if(userInfo.verifyemail && pathname==="/verify-email"){
+            if(userInfo.emailVerified && pathname==="/verify-email"){
                 return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
             }
 
             // if need change password
-            if(userInfo.needchangePasswod){
+            if(userInfo.needPasswordChange){
                   if(pathname !== "/reset-password"){
                         const resetPasswordUrl = new URL("/reset-password", request.url);
                         resetPasswordUrl.searchParams.set("email", userInfo.email);
@@ -164,6 +161,12 @@ export const proxy=async(request:NextRequest)=>{
 
     }
 
+
+  // user is login and trying to go login page agian
+    if(isAuth && isValidAccessToken){
+
+        return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
+    }
     
     // trying to access common protected route
     if(routeOwner==="COMMON"){

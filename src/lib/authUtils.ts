@@ -2,7 +2,7 @@
 
 export type UserRole = "SUPER_ADMIN" | "ADMIN" | "DOCTOR" | "PATIENT";
 
-export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password", "/verify-email" ];
+export const authRoutes = [ "/login", "/register", "/forgot-password", "/reset-password" ,"/verify-email"];
 
 export const isAuthRoute=(pathName:string)=>{
     return authRoutes.some((route)=>route===pathName)
