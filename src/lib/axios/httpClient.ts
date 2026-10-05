@@ -1,15 +1,50 @@
 
 import { ApiResponse } from '@/types/api.types';
 import axios from 'axios';
+import { isTokenExpireingSoon } from '../tokenUtils';
+import { cookies, headers } from 'next/headers';
+import { getNewTokensWithRefreshToken } from '@/services/auth.service';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000/api/v1';
 
-const axiosInstance=()=>{
+const tryRefreshToken=async(accessToken:string,refreshToken:string):Promise<void>=>{
+    if(!isTokenExpireingSoon(accessToken)){
+        return;
+    }
+
+    const requestHeader=await headers()
+
+    if(requestHeader.get("x-token-refreshed")==="1"){
+        return
+    }
+
+    try {
+        await getNewTokensWithRefreshToken(refreshToken)
+    } catch (error) {
+     console.error("Error refreshing token in http client",error)   
+    }
+}
+
+
+const axiosInstance=async()=>{
+    const cookieStore=await cookies()
+
+    const accessToken = cookieStore.get("accessToken")?.value;
+    const refreshToken = cookieStore.get("refreshToken")?.value;
+
+    if(accessToken&& refreshToken){
+        await tryRefreshToken(accessToken,refreshToken)
+    }
+
+    const cookieHeader=cookieStore.getAll().map((cookie)=>`${cookie.name}=${cookie.value}`).join("; ")
+
+
     const instance=axios.create({
         baseURL:API_BASE_URL,
         timeout: 30000,
         headers: {
             "Content-Type":'application/json',
+            Cookie:cookieHeader
         }
     })
     return instance;
@@ -22,7 +57,7 @@ export interface IApiRequestOptions{
 
 const httpGet=async<TData>(endpoint:string,options?:IApiRequestOptions):Promise<ApiResponse<TData>>=>{
     try {
-        const response=await axiosInstance().get<ApiResponse<TData>>(endpoint,{
+        const response=await (await axiosInstance()).get<ApiResponse<TData>>(endpoint,{
             params:options?.params,
             headers:options?.headers
         })
@@ -35,7 +70,7 @@ const httpGet=async<TData>(endpoint:string,options?:IApiRequestOptions):Promise<
 
 const httpPost=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOptions):Promise<ApiResponse<TData>>=>{
     try {
-        const response=await axiosInstance().post<ApiResponse<TData>>(endpoint,data,{
+        const response=await (await axiosInstance()).post<ApiResponse<TData>>(endpoint,data,{
             params:options?.params,
             headers:options?.headers
         })
@@ -48,7 +83,7 @@ const httpPost=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOpt
 
 const httpPut=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOptions):Promise<ApiResponse<TData>>=>{
     try {
-        const response=await axiosInstance().put<ApiResponse<TData>>(endpoint,data,{
+        const response=await (await axiosInstance()).put<ApiResponse<TData>>(endpoint,data,{
             params:options?.params,
             headers:options?.headers
         })
@@ -61,7 +96,7 @@ const httpPut=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOpti
 
 const httpPatch=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOptions):Promise<ApiResponse<TData>>=>{
     try {
-        const response=await axiosInstance().patch<ApiResponse<TData>>(endpoint,data,{
+        const response=await (await axiosInstance()).patch<ApiResponse<TData>>(endpoint,data,{
             params:options?.params,
             headers:options?.headers
         })
@@ -74,7 +109,7 @@ const httpPatch=async<TData>(endpoint:string,data:unknown,options?:IApiRequestOp
 
 const httpDelete=async<TData>(endpoint:string,options?:IApiRequestOptions):Promise<ApiResponse<TData>>=>{
     try {
-        const response=await axiosInstance().delete<ApiResponse<TData>>(endpoint,{
+        const response=await (await axiosInstance()).delete<ApiResponse<TData>>(endpoint,{
             params:options?.params,
             headers:options?.headers
         })
