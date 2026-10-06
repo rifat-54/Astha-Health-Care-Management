@@ -129,7 +129,7 @@ export const proxy=async(request:NextRequest)=>{
 
             console.log("userinfo",userInfo)
             // if  email not verify
-            if(userInfo.emailVerified===false){
+            if(userInfo?.emailVerified===false){
                 if(pathname!=="/verify-email"){
                     const url=new URL("/verify-email",request.url)
                     url.searchParams.set("email",userInfo.email)
@@ -138,7 +138,7 @@ export const proxy=async(request:NextRequest)=>{
                 return NextResponse.next()
             }
 
-            if(userInfo.emailVerified && pathname==="/verify-email"){
+            if(userInfo?.emailVerified && pathname==="/verify-email"){
                 return NextResponse.redirect(new URL(getDefaultDashboardRoute(userRole),request.url))
             }
 
