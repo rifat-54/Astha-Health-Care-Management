@@ -33,7 +33,7 @@ return (
       {/* Navigation Area */}
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-6">
-          {navItems.map((section, sectionId) => (
+          {navItems?.map((section, sectionId) => (
             <div key={sectionId}>
               {section.title && (
                 <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -78,14 +78,14 @@ return (
         <div className="flex items-center gap-3">
           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
             <span className="text-sm font-semibold text-primary">
-              {userInfo.name.charAt(0).toUpperCase()}
+              {userInfo?.name.charAt(0).toUpperCase()}
             </span>
           </div>
 
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">{userInfo.name}</p>
+            <p className="text-sm font-medium truncate">{userInfo?.name}</p>
             <p className="text-xs text-muted-foreground capitalize">
-              {userInfo.role.toLocaleLowerCase().replace("_", " ")}
+              {userInfo?.role?.toLocaleLowerCase().replace("_", " ")}
             </p>
           </div>
         </div>

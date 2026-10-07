@@ -35,7 +35,7 @@ const DashboardMobileSidebar = ({dashboardHome, navItems, userInfo} : DashboardM
 
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="space-y-1">
-          {navItems.map((section, sectionId) => (
+          {navItems?.map((section, sectionId) => (
             <div key={sectionId}>
               {section.title && (
                 <h4 className="mb-2 px-3 text-xs font-semibold text-muted-foreground uppercase">

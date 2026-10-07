@@ -55,7 +55,7 @@ export const getUserInfo=async()=>{
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
 
-    //   console.log("cookie header+>",cookieHeader)
+      console.log("cookie header+>",cookieHeader)
 
         const res=await fetch(`${BASE_API_URL}/auth/me`,{
             method:"GET",
@@ -73,10 +73,11 @@ export const getUserInfo=async()=>{
 
         const {data}=await res.json()
 
+        console.log("UserInfo auth service_>",data)
+
         return data;
 
 
-        // console.log("from auth service_>",data)
     } catch (error) {
         console.error("Error fatching user info",error)
         return null
