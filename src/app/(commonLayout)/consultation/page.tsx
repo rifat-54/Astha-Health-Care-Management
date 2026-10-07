@@ -5,8 +5,10 @@ import {
   noop,
 } from "@tanstack/react-query";
 import React from "react";
-import { getDoctors } from "./_actions";
-import DoctorList from "@/src/components/modules/consultation/DoctorList";
+
+
+import { getDoctors } from "@/services/doctor.service";
+import DoctorList from "@/components/modules/consultation/DoctorList";
 
 const ConsultationPage = async () => {
   const queryClient = new QueryClient();
